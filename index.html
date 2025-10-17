@@ -2,183 +2,242 @@
 <html>
     <head>
         <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
         <link rel="shortcut icon" href="img/star.ico" type="image/extensión" />
         <title>Mario Slot Kingdom</title>
         <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet">
         <style type="text/css">
-            body{
-                margin:auto;
+            /* -------------------------------------------------------------------------- */
+            /* GLOBALE BASISSTIJLEN (Mobile-First) */
+            /* -------------------------------------------------------------------------- */
+            body {
+                margin: auto;
                 font-family: 'Pacifico', cursive;
+                padding: 10px; /* Ruimte rondom de content */
+                background-color: #f0f0f0; /* Lichte achtergrond */
             }
-            img{
-                max-width:100%;
-                vertical-align:top;
+            img {
+                max-width: 100%;
+                height: auto; /* Behoudt beeldverhouding */
+                vertical-align: top;
             }
-            section{
-                position:relative;
-                width:550px;
-                margin:auto;
-                margin-top:20px;
+            section {
+                position: relative;
+                /* VERVANGEN door flexibele breedte */
+                width: 95%; 
+                max-width: 550px; /* Maximale breedte behouden voor grote schermen */
+                margin: auto;
+                margin-top: 20px;
             }	
-            .windows,.buttons{
-                display:flex;
-                justify-content:center;
-                margin-bottom:12px;
+            .windows, .buttons {
+                display: flex;
+                justify-content: space-around; /* Gelijkmatige verdeling op mobiel */
+                margin-bottom: 15px; /* Meer ruimte tussen secties */
             }
-            .window:nth-child(2),.button:nth-child(2){
-                margin:auto 16px;
+            /* Deze regel is niet meer nodig door justify-content: space-around; */
+            /* .window:nth-child(2), .button:nth-child(2) { margin: auto 16px; } */
+
+            .window {
+                padding: 6px;
+                width: 30%; /* Flexibele breedte van 30% */
+                height: auto;
+                aspect-ratio: 1 / 1; /* Zorgt voor een vierkante vorm, essentieel voor responsive */
+                border: 4px solid crimson;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden; /* Zorgt dat de afbeelding netjes binnen de window blijft */
             }
-            .window{
-                padding:6px;
-                width:150px;
-                height:150px;
-                border:4px solid crimson;
-                border-radius:12px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
+            .window img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain; /* Past de afbeelding in het venster zonder te croppen */
             }
-            .button{
-                padding:6px;
-                box-shadow:0 0 12px crimson inset;
-                width:150px;
-                height:40px;
-                border:4px solid crimson;
-                border-radius:12px;
-                text-align:center;
-                line-height:40px;
-                font-size:1.2em;
-                background-color:#ffffff;
-                color:rgb(0, 0, 0);
-                cursor:pointer;
-                user-select:none;
-                -moz-user-select:none;
+            
+            /* Knoppen geoptimaliseerd voor Touchscreen */
+            .button {
+                padding: 10px;
+                box-shadow: 0 0 12px crimson inset;
+                width: 30%;
+                height: auto;
+                min-height: 48px; /* Minimale aanraakgrootte voor touch */
+                border: 4px solid crimson;
+                border-radius: 12px;
+                text-align: center;
+                line-height: normal; /* Lijnhoogte flexibel maken */
+                display: flex; /* Flexbox gebruiken om tekst te centreren */
+                align-items: center;
+                justify-content: center;
+                font-size: 1em; /* Iets kleinere font op mobiel */
+                background-color: #ffffff;
+                color: rgb(0, 0, 0);
+                cursor: pointer;
+                user-select: none;
+                -moz-user-select: none;
+                box-sizing: border-box;
             }
-            .button:hover,#spin:hover{
-                background-color:white;
-                box-shadow:0 0 13px crimson inset;
-            }
-            header{
-                height:168px;
-            }
-            #available{
-                display:flex;
-                align-items:center;
-            }
-            #credits{
-                color:orange;
-                font-size:1.4em;
-            }
-            #money{
-                font-size:5em;
-                line-height:30px;
-            }
-            #spin{
-                cursor:pointer;
-                padding:15px 18px 15px 10px;
-                user-select:none;
-                -moz-user-select:none;
-                width:180px;
-                height:180px;
-                border-radius:50%;
-                border:6px solid crimson;
-                text-align:center;
-                font-size:3.9em;
-                line-height:140px;
-                box-shadow:0 0 40px crimson inset;
-                position:absolute;
-                left:0;
-                right:0;
-                background-color:#ffffff;
-                margin:auto;
-                top:1px;
-                box-sizing:border-box;
-            }
-            .euros{
-                font-size:1.5rem;
-            }
-            #coins{
-                width:170px;
-                margin-top:10px;
-            }
-            #coins img{
-                width:30px;
-                margin-right:3px;
-                margin-bottom:3px;
-            }
-            #veil{
-                display:none;
-                width:100%;
-                height:100%;
-                background-color:rgba(255,255,255,0.5);
-                position:fixed;
-                top:0;
-                left:0;
-                justify-content:center;
-                user-select:none;
-                -moz-user-select:none;
-            }
-            #message_box{
-                width:540px;
-                height:105px;
-                border-radius:12px;
-                border:5px solid crimson;
-                background-color:rgba(255,255,255,0.9);
-                position:relative;
-                top:355px;
-                padding:5px;
-            }
-            #message{
-                font-size:1.7em;
-                color:crimson;
-                padding:2px;
-                text-align:center;
-            }
-            #cross{
-                position:absolute;
-                top:5px;
-                right:5px;
-                cursor:pointer;
-            }
-            .coin{
-                margin-top:5px;
+            
+            /* Verwijder de :hover regel, want touchscreens hebben geen hover */
+            /* Vervang door :active voor visuele feedback bij aanraking */
+            .button:active, #spin:active { 
+                background-color: #ffeaea; /* Lichte kleurverandering bij aanraking */
+                box-shadow: 0 0 13px darkred inset;
+                transform: scale(0.98); /* Kleine schaalverandering voor feedback */
             }
 
-            #prizeTable{
-                width:260px;
-                height:230px;
-                padding:10px 15px 20px 30px;
-                border-radius:12px;
-                user-select:none;
-                border:4px solid crimson;
-                box-shadow:0 0 30px crimson inset;
-                text-align:left;
-                font-size:1em;
-                line-height:14px;
-                background-color:#ffffff;
-                margin:auto;
-                top:1px;
-                box-sizing:border-box;
+            header {
+                height: 168px; /* Misschien vast, maar we maken de inhoud flexibel */
+                position: relative;
+                margin-bottom: 20px;
+            }
+            #available {
+                display: flex;
+                align-items: center;
+                justify-content: space-between; /* Nieuw: Zorgt dat logo en credits naast elkaar staan */
+            }
+            #credits {
+                color: orange;
+                font-size: 1.2em; /* Iets kleiner op mobiel */
+                display: flex;
+                align-items: flex-end;
+            }
+            #money {
+                font-size: 3em; /* Iets kleiner op mobiel */
+                line-height: 30px;
+                display: flex;
+                align-items: flex-end;
+            }
+            #spin {
+                cursor: pointer;
+                padding: 15px;
+                user-select: none;
+                -moz-user-select: none;
+                width: 150px; /* Iets kleiner gemaakt voor mobiel */
+                height: 150px; 
+                border-radius: 50%;
+                border: 6px solid crimson;
+                text-align: center;
+                font-size: 3em; /* Aangepast */
+                line-height: 120px; /* Aangepast */
+                box-shadow: 0 0 40px crimson inset;
+                position: absolute;
+                left: 0;
+                right: 0;
+                background-color: #ffffff;
+                margin: auto;
+                top: 1px;
+                box-sizing: border-box;
+                z-index: 10; /* Zorg dat het klikbaar is */
+            }
+            .euros {
+                font-size: 1.5rem;
+            }
+            #coins {
+                width: 100%;
+                margin-top: 10px;
+                text-align: right;
+            }
+            #coins img {
+                width: 25px; /* Iets kleiner op mobiel */
+                margin-right: 2px;
+                margin-bottom: 3px;
+                display: inline-block; /* Zodat ze goed naast elkaar staan */
+            }
+            
+            /* Verbeterde Overlay */
+            #veil {
+                display: none;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 255, 255, 0.9);
+                position: fixed;
+                top: 0;
+                left: 0;
+                justify-content: center;
+                align-items: center; /* Nieuw: Centreert de messagebox verticaal */
+                user-select: none;
+                -moz-user-select: none;
+                z-index: 100;
+            }
+            #message_box {
+                width: 90%; /* Flexibele breedte op mobiel */
+                max-width: 540px;
+                height: auto;
+                border-radius: 12px;
+                border: 5px solid crimson;
+                background-color: rgba(255, 255, 255, 0.95);
+                position: relative;
+                padding: 20px;
+                box-sizing: border-box;
+                top: 0; /* Verwijder vaste positie */
+            }
+            #message {
+                font-size: 1.5em; /* Aangepast voor mobiel */
+                color: crimson;
+                padding: 2px;
+                text-align: center;
+            }
+            #cross {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                cursor: pointer;
+                /* Groter aanraakvlak voor de sluitknop */
+                padding: 10px; 
+                width: 28px;
+                height: 28px;
+                box-sizing: content-box;
             }
 
-            #logo{
-                width:150px;
-                height:200px;
-                padding:1px 10px 10px 10px;
-                border-radius:12px;
-                user-select:none;
+            #prizeTable {
+                width: 100%;
+                height: auto;
+                padding: 15px;
+                border-radius: 12px;
+                user-select: none;
+                border: 4px solid crimson;
+                box-shadow: 0 0 30px crimson inset;
+                text-align: left;
+                font-size: 0.9em;
+                line-height: 16px;
+                background-color: #ffffff;
+                margin-top: 20px;
+                box-sizing: border-box;
+            }
+            #logo {
+                width: 150px;
+                height: 100%; /* Maak hoogte flexibel */
+                padding: 1px 10px;
+                user-select: none;
+            }
 
-                text-align:left;
-                font-size:1em;
-                line-height:14px;
-
-                margin:auto;
-                top:1px;
-                box-sizing:border-box;
+            /* -------------------------------------------------------------------------- */
+            /* MEDIA QUERY VOOR GROTERE SCHERMEN (Desktop/Tablet landscape) */
+            /* -------------------------------------------------------------------------- */
+            @media (min-width: 550px) {
+                .button {
+                    font-size: 1.2em; /* Grotere font op desktop */
+                }
+                #spin {
+                    width: 180px;
+                    height: 180px;
+                    font-size: 3.9em;
+                    line-height: 140px;
+                }
+                #money {
+                    font-size: 5em;
+                }
+                #credits {
+                    font-size: 1.4em;
+                }
+                #message {
+                    font-size: 1.7em;
+                }
             }
         </style>
-        <script type="text/javascript" src="js/index.js">
-        </script>
+        <script type="text/javascript" src="js/index.js"></script>
     </head>
     <body>
         <section>
@@ -187,9 +246,8 @@
                     <div id="credits">Credits: <div id="amount"></div></div>
                     <div id="money"><span class="euros">€</span></div>
                 </div>
-                <div id="coins">
-                </div>
-                <div id="spin">Spin</div>
+                <div id="coins"></div>
+                <div id="spin">Spin</div> 
             </header>
             <div class="windows">
                 <div class="window" id="window1">
@@ -213,7 +271,7 @@
                     Spin Again
                 </div>
             </div>
-            <div id="available">
+            <div class="windows"> 
                 <div id="logo"></div>
                 <div id="prizeTable"></div>
             </div>
