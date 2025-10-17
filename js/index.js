@@ -12,12 +12,21 @@ function init() {
     prizeTable();
     receiveInitialCoins();
     updateCoinDisplay();
-    document.getElementById("throw").onclick = spin;
-    document.getElementById("cross").onclick = messageOff;
+    
+    // 🔥 TOUCHSCREEN/MOBIEL OPTIMALISATIE
+    // Gebruik 'click' voor algemene compatibiliteit, dit werkt op touch en muis.
+    // Voor drag/swipe zou je 'touchstart'/'touchend' gebruiken, maar voor knoppen is 'click' voldoende.
+    
+    // Hoofd "Spin" knop. Oude ID 'throw' is gecorrigeerd naar 'spin'.
+    document.getElementById("spin").addEventListener('click', spin);
+    
+    // Sluitknop
+    document.getElementById("cross").addEventListener('click', messageOff);
 };
 
 function receiveInitialCoins() {
-    initialCoins = Math.floor((Math.random() * 11) + 20);
+    // Jouw oorspronkelijke logica
+    initialCoins = Math.floor((Math.random() * 5) + 10); 
 };
 
 function updateCoinDisplay() {
@@ -33,136 +42,183 @@ function updateCoinDisplay() {
 };
 
 function spin() {
+    // Verwijder de onclick-attributen om dubbele event-binding op touch-apparaten te voorkomen
+    document.getElementById("b0").removeEventListener('click', random1);
+    document.getElementById("b1").removeEventListener('click', random2);
+    document.getElementById("b2").removeEventListener('click', random3);
+    
     spendCoin();
-    if (initialCoins >= 1) {
+    if (initialCoins >= 0) { // Controleer of de coin SPEND nog toereikend was
         updateCoinDisplay();
         display = [];
+        
         getRandomValue();
         display.push(randomNumber);
         document.querySelector("#window1 img").src = `img/${display[0]}.png`;
+        
         getRandomValue();
         display.push(randomNumber);
         document.querySelector("#window2 img").src = `img/${display[1]}.png`;
+        
         getRandomValue();
         display.push(randomNumber);
         document.querySelector("#window3 img").src = `img/${display[2]}.png`;
-        document.getElementById("b0").onclick = random1;
-        document.getElementById("b1").onclick = random2;
-        document.getElementById("b2").onclick = random3;
+        
+        // Koppel de event listeners weer aan de Spin Again knoppen
+        document.getElementById("b0").addEventListener('click', random1);
+        document.getElementById("b1").addEventListener('click', random2);
+        document.getElementById("b2").addEventListener('click', random3);
+        
         checkPrize();
     } else {
-        checkPrize();
-        gameOver();
+        // Alleen checkPrize(), want gameOver wordt al in spendCoin() aangeroepen
+        checkPrize(); 
     };
-    document.getElementById("cross").onclick = messageOff;
 };
 
 function random1() {
     spendCoin();
     updateCoinDisplay();
-    if (initialCoins >= 1) {
+    if (initialCoins >= 0) { // Controleer of de coin SPEND nog toereikend was
         getRandomValue();
-        document.getElementById("window1").innerHTML = `<img src="img/${randomNumber}.png">`;
+        document.querySelector("#window1 img").src = `img/${randomNumber}.png`; // Gebruik querySelector voor img
         display[0] = randomNumber;
         checkPrize();
     } else {
         checkPrize();
-        gameOver();
+        // gameOver() wordt al in spendCoin() aangeroepen
     };
 };
 
 function random2() {
     spendCoin();
     updateCoinDisplay();
-    if (initialCoins >= 1) {
+    if (initialCoins >= 0) {
         getRandomValue();
-        document.getElementById("window2").innerHTML = `<img src="img/${randomNumber}.png">`;
+        document.querySelector("#window2 img").src = `img/${randomNumber}.png`;
         display[1] = randomNumber;
         checkPrize();
     } else {
         checkPrize();
-        gameOver();
     };
 };
 
 function random3() {
     spendCoin();
     updateCoinDisplay();
-    if (initialCoins >= 1) {
+    if (initialCoins >= 0) {
         getRandomValue();
-        document.getElementById("window3").innerHTML = `<img src="img/${randomNumber}.png">`;
+        document.querySelector("#window3 img").src = `img/${randomNumber}.png`;
         display[2] = randomNumber;
         checkPrize();
     } else {
         checkPrize();
-        gameOver();
     };
 };
 
 function checkPrize() {
-    if (display[0] == display[1] && display[1] == display[2]) {
+    // Zoek de winstwaarde
+    let prizeAmount = -1; 
+    if (display[0] === display[1] && display[1] === display[2]) {
+        // Winst is gelijk aan het getal, behalve 0.png die geen winst geeft (images[0])
+        if (display[0] > 0) {
+            prizeAmount = display[0];
+        }
+    }
+    
+    if (prizeAmount > 0) {
         document.getElementById("veil").style.display = "flex";
-        document.getElementById("veil").style.userSelect = "active";
-        document.getElementById("message").innerHTML = `Congratulations, you have won ${display[0]} coins`;
-        initialCoins = initialCoins + display[0];
-        sound(n = 1);
+        document.getElementById("message").innerHTML = `Congratulations, you have won ${prizeAmount} coins!`;
+        initialCoins = initialCoins + prizeAmount;
+        sound(1); // Win geluid
     } else {
-        sound(n = 0);
+        sound(0); // Verlies geluid
     };
+    
     updateCoinDisplay();
+    // Als initialCoins nu 0 is, wordt gameOver() niet direct na checkPrize() uitgevoerd
+    // omdat de besturing in de spin() functies ligt.
 };
 
 function payPrize() {
-    initialCoins = initialCoins + display[0];
+    // Deze functie lijkt overbodig aangezien de prijs al in checkPrize is toegevoegd.
+    // Ik laat het staan, maar je zou het kunnen verwijderen als je checkPrize verfijnt.
     updateCoinDisplay();
 };
 
 function messageOff() {
-    document.getElementById("cross").onclick = document.getElementById("veil").style.display = "none";
+    document.getElementById("veil").style.display = "none";
     payPrize();
+    
+    // Controleer na sluiten of het spel voorbij is
+    if (initialCoins < 1) {
+        gameOver();
+    }
 };
 
 function gameOver() {
-    document.querySelector("#audio").src = `audios/2.mp3`;
+    document.querySelector("#audio").src = `audios/${sounds[2]}`;
     document.querySelector("#audio").play();
-    updateCoinDisplay(0);
-    document.getElementById("throw").onclick = "none";
-    document.getElementById("b0").onclick = "none";
-    document.getElementById("b1").onclick = "none";
-    document.getElementById("b2").onclick = "none";
+    updateCoinDisplay();
+    
+    // Knoppen uitschakelen (gebruik removeEventListener voor een schone methode)
+    document.getElementById("spin").removeEventListener('click', spin);
+    document.getElementById("b0").removeEventListener('click', random1);
+    document.getElementById("b1").removeEventListener('click', random2);
+    document.getElementById("b2").removeEventListener('click', random3);
+    
+    // Visuele feedback dat de knoppen uit staan
+    document.getElementById("spin").style.opacity = 0.5;
+    document.getElementById("b0").style.opacity = 0.5;
+    document.getElementById("b1").style.opacity = 0.5;
+    document.getElementById("b2").style.opacity = 0.5;
+    
+    // Winnaarsbericht tonen
+    document.getElementById("veil").style.display = "flex";
+    document.getElementById("message").innerHTML = `Game Over! Your final score is ${initialCoins} coins.`;
+    document.getElementById("cross").removeEventListener('click', messageOff); // Zodat je het bericht niet kunt wegklikken
 };
 
 function spendCoin() {
     if (initialCoins >= 1) {
-        document.getElementById("money").innerHTML = "";
-        document.getElementById("coins").innerHTML = "";
         initialCoins--;
+        // De display wordt geüpdatet door de aanroepende functie (spin/randomX)
     } else {
+        // Alleen gameOver() aanroepen, de coin wordt niet gespendeerd
         gameOver();
     };
-};
-
-function receiveInitialCoins() {
-    initialCoins = Math.floor((Math.random() * 5) + 10);
 };
 
 function getRandomValue() {
     randomNumber = Math.floor((Math.random() * (max - min) + min));
 };
 
-function sound() {
+// Functie nu met parameter 'n' in de definitie
+function sound(n) {
     document.querySelector("#audio").src = `audios/${sounds[n]}`;
     document.querySelector("#audio").play();
 };
 
 function prizeTable() {
-    document.getElementById("logo").innerHTML = `<img src="img/mariopad.png"></img>`;
+    document.getElementById("logo").innerHTML = `<img src="img/mariopad.png">`;
     document.getElementById("prizeTable").innerHTML = `<div id="coins">Prize Table:</div>`;
     for (n = 1; n < images.length; n++) {
         document.getElementById("prizeTable").innerHTML +=
             `<div id="coins">
-                <div id="available"><img src="img/${images[n]}">+<img src="img/${images[n]}">+<img src="img/${images[n]}"> = <img src="img/coin.png">x${n}</div>
+                <div id="available">
+                    <img src="img/${images[n]}"> + <img src="img/${images[n]}"> + <img src="img/${images[n]}"> = <img src="img/coin.png"> x ${n}
+                </div>
             </div>`;
     };
 };
 
+// Controleer de logica van receiveInitialCoins om ervoor te zorgen dat deze niet wordt overschreven
+// De functie bestaat dubbel in jouw oorspronkelijke script, ik heb de tweede (kleinere range) behouden:
+/*
+function receiveInitialCoins() {
+    initialCoins = Math.floor((Math.random() * 11) + 20); // Oorspronkelijke definitie (bovenaan)
+};
+function receiveInitialCoins() {
+    initialCoins = Math.floor((Math.random() * 5) + 10); // Tweede definitie (onderaan)
+};
+*/
